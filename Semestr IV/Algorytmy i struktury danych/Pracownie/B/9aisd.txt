@@ -1,0 +1,56 @@
+Algorytm:
+
+Dla każdego w_i tworzymy wierzchołek v_i i wrzucamy do kolejki priorytetowej
+
+Dopóki kolejka zawiera więcej niż jeden element:
+	u,v <- pierwsze dwa wierzcholki z kolejki
+	stwórz wierzchołek p, t.że c(p)=c(u)+c(v) i ustawmy u i v jako jego dzieci
+	włóż p do kolejki
+
+
+Dowód poprawności algorytmu:
+
+Lemat 1. Szukane drzewo jest regularne.
+Dowód: Załóżmy, że nie jest, wtedy można zmniejszyć wysokość najwyższego wierzchołka otrzymując drzewo o niższym współczynniku EL().
+
+Lemat 2. Istnieje rozwiązanie optymalne, w którym dwa wierzchołki o minimalnych wagach są dziećmi wspólnego rodzica.
+Dowód:
+oznaczmy je v i w. Weźmy dowolne rozwiązanie optymalne T i załóżmy, że v i w nie są dziećmi wspólnego rodzica, wtedy z lematu 1. wiemy, że w rozpatrywanym drzewie istnieją wierzchołki x,y będące dziećmi wspólnego rodzica, na poziomie nie wyższym niż poziom v lub w. Zamieńmy miejscami v,w z x,y odpowiednio otrzymując drzewo T'.
+
+EL(T') = EL(T) - v*d(v) - w*d(w) - x*d(x) - y*d(y) + x*d(v) + y*d(w) + v*d(x) + w*d(y) =
+       = EL(T) - d(x)*(x+y) + d(x)*(w+v) - d(v)(v - x) - d(w)(w-x) >=
+       >= EL(T) - d(x)(w+v-x-y) + d(x)(w+v-x-y) = EL(T)
+
+Dowód indukcyjny po liczbie liści
+Baza n:=1 jest trywialnie spełniona
+
+Krok załóżmy, że dla n liści algorytm działa:
+Rozważmy przypadek n+1 liści
+
+
+Niech v i w - najmniejsze wagi
+W' = W \ {v,w} +{v+w}
+
+P - rozwiązanie dla W znalezione przez algorytm
+P' - rozwiązanie dla W' znalezione przez algorytm; z założenia optymalne
+T - rozwiązanie optymalne dla W, t.że v i w są braćmi
+T' - T ze złączonymi wierzchołkami v i w w jeden (v+w)
+
+Obserwacje:
+EL(T')>=EL(P')			// bo P' jest optymalne
+EL(T)=EL(T') + w + v		// ze względu na specyfikę powstania T'
+EL(P)=EL(P')+w+v		// ze względu na specyfikę algorytmu
+
+Zatem 
+EL(T)=EL(T') + w + v >= EL(P') + w + v = EL(P)
+Czyli mój algorytm zwraca rozwiązanie co najmniej tak dobre jak optymalne.
+
+
+Złożoność czasowa:
+Wstawianie elementu do kolejki priorytetowej O(log(n))
+Sprawdzenie wszystkich elementów O(n)
+Łącznie: O(n*log(n))
+
+Złożoność pamięciowa:
+O(n)
+

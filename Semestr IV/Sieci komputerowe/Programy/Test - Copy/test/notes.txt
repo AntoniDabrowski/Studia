@@ -1,0 +1,246 @@
+
+
+Na koniec:
+1. ujednolicić nazwy funkcji
+2. Beautify
+3. Sprawdzić czy funkcjie wykorzystują wszystkie zmienne im podane
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <arpa/inet.h>
+#include <limits.h>
+
+
+struct dv_item{
+    uint32_t ip_int;
+    char ip_str[20];
+    int mask;
+    uint32_t via_int;
+    char via_str[20];
+    uint16_t turn;
+    uint32_t distance;
+    bool directly_connected;
+};
+
+
+typedef struct node{
+    struct dv_item data;
+    struct node *next;
+}node;
+
+node* import_configs(){
+    char icmp_addr[20],d[20],ip[20];
+    uint32_t distance;
+
+    char mask[3];
+    scanf("%s",icmp_addr);
+    scanf("%s",d);
+    scanf("%u",&distance);
+
+    // Converting IP
+    bool still_ip = true;
+    int last;
+    for(int i=0;i<strlen(icmp_addr);i++){
+        if(icmp_addr[i]=='/'){
+            still_ip = false;
+            ip[i] = '\0';
+            i++;
+            last = i;
+        }
+        if(still_ip)
+            ip[i]=icmp_addr[i];
+        else
+            mask[i-last]=icmp_addr[i];
+    }
+    struct dv_item new_item;
+    
+    inet_pton(AF_INET, ip, &(new_item.ip_int));
+    new_item.ip_int = htonl(new_item.ip_int);
+    
+    strcpy(new_item.ip_str, ip);
+    new_item.mask = atoi(mask);
+    new_item.via_int = new_item.ip_int|(UINT_MAX>>new_item.mask);
+    
+    
+    inet_ntop(AF_INET, (uint32_t*)htonl(new_item.via_int), new_item.via_str, 20);
+    
+    new_item.turn = 0;
+    new_item.distance = distance;
+    new_item.directly_connected = true;
+    node* new_node = NULL;
+    new_node = (node*)malloc(sizeof(node));
+    new_node->data = new_item;
+    return new_node;
+}
+
+
+node* createLinkedList(int n){
+    int i = 0;
+    node *head = NULL;
+    node *temp = NULL;
+    node *p = NULL;
+
+    for(int i=0;i<n;i++){
+        temp = (node*)malloc(sizeof(node));
+        temp = import_configs();
+        temp->next = NULL;
+
+        if(head == NULL){
+            head = temp;
+        }
+        else{
+            p = head;
+            while(p->next != NULL)
+                p = p->next;
+            p->next = temp;
+        }
+    }
+    return head;
+}
+
+void displayLinkedList(node* head){
+    node* p = head;
+    while(p!=NULL){
+        printf("%s/%d ",p->data.ip_str,p->data.mask);
+        if(p->data.distance==UINT_MAX){
+            printf("unreachable");
+            if(p->data.directly_connected){
+                printf(" connected directly\n");
+            }
+            else{
+                printf("\n");
+            }
+        }
+        else{
+            if(p->data.directly_connected){
+                if(p->data.ip_int|(UINT_MAX>>p->data.mask)!=p->data.via_int)
+                    printf("distance %u via %s\n",p->data.distance,p->data.via_str);
+                else
+                    printf("distance %u connected directly\n",p->data.distance);
+            }
+            else{
+                printf("distance %u via %s\n",p->data.distance,p->data.ip_str);
+            }
+        }
+        p = p->next;
+    }
+}
+
+void push_back(node* new_element, node* head){
+    node *p = NULL;
+    p = head;
+    while(p->next != NULL)
+        p = p->next;
+    p->next = new_element;
+    new_element->next = NULL;
+}
+
+node* remove_element(node* head, uint32_t val){
+    node *p = NULL;
+    p = head;
+    if(p->data.ip_int == val){
+        return head->next;
+    }
+    while(p->next != NULL){
+        if((p->next)->data.ip_int==val){
+            p->next = (p->next)->next;
+        }
+        p = p->next;
+    }
+    return head;
+}
+
+
+void create_packets(uint8_t packets[][9], node* head){
+    int i = 0;
+    node* temp = head;
+    while(temp!=NULL){
+        packets[i][0] = (head->data.ip_int)>>24;
+        packets[i][1] = ((head->data.ip_int)<<8)>>24;
+        packets[i][2] = ((head->data.ip_int)<<16)>>24;
+        packets[i][3] = ((head->data.ip_int)<<24)>>24;
+        packets[i][4] = head->data.mask;
+        packets[i][5] = (head->data.distance)>>24;
+        packets[i][6] = ((head->data.distance)<<8)>>24;
+        packets[i][7] = ((head->data.distance)<<16)>>24;
+        packets[i][8] = ((head->data.distance)<<24)>>24;
+        i++;
+        temp = temp->next;
+    }
+}
+
+void handle_recived_packet(uint8_t packet[9], uint32_t packet_via_int, int additional_distance, node* head,
+    int current_turn){
+    node* temp = head;
+    uint32_t packet_ip;
+    packet_ip = packet[0];
+    packet_ip = packet_ip<<8;
+    packet_ip += packet[1];
+    packet_ip = packet_ip<<8;
+    packet_ip += packet[2];
+    packet_ip = packet_ip<<8;
+    packet_ip += packet[3];
+    printf("-> %u\n",packet_ip);
+    int packet_mask = packet[4];
+    
+    uint32_t packet_distance;
+    packet_distance = packet[5];
+    packet_distance = packet_distance<<8;
+    packet_distance += packet[6];
+    packet_distance = packet_distance<<8;
+    packet_distance += packet[7];
+    packet_distance = packet_distance<<8;
+    packet_distance += packet[8];
+    
+    bool founded = false;
+    while(temp!=NULL && !founded){
+        if(temp->data.ip_int==packet_ip && temp->data.mask == packet_mask){
+            founded = true;
+            if(temp->data.distance>packet_distance+additional_distance){
+                temp->data.via_int = packet_via_int;
+                inet_ntop(AF_INET, &packet_via_int, temp->data.via_str, 20);
+                temp->data.turn = current_turn;
+                temp->data.distance = packet_distance + additional_distance;
+            }
+            else if(temp->data.via_int == packet_via_int)
+                temp->data.turn = current_turn;
+        }
+        temp = temp->next;
+    }
+    if(!founded){
+        node* new_node = NULL;
+        new_node = (node*)malloc(sizeof(node));
+        new_node->data.ip_int = packet_ip;
+        inet_ntop(AF_INET, &packet_ip, new_node->data.ip_str, 20);
+        new_node->data.mask = packet_mask;
+        new_node->data.via_int = packet_via_int;
+        inet_ntop(AF_INET, &packet_via_int, new_node->data.via_str, 20);
+        new_node->data.turn = current_turn;
+        new_node->data.distance = packet_distance + additional_distance;
+        new_node->data.directly_connected = 0;
+        push_back(new_node, head);
+    }
+}
+
+int main()
+{
+    int n = 0;
+    node* HEAD = NULL;
+    scanf("%d",&n);
+    HEAD = createLinkedList(n);
+    displayLinkedList(HEAD);
+    printf("\n");
+    //HEAD->data.distance = 0;
+    uint8_t packets[2][9];
+    create_packets(packets,HEAD);
+    //handle_recived_packet(packets[0],3232235777,-1,HEAD,1);
+    //handle_recived_packet(char packet[9], uint32_t packet_via_int, int additional_distance, node* head,
+    //int current_turn)
+    //displayLinkedList(HEAD);
+    return 0;
+}

@@ -1,0 +1,82 @@
+2.
+
+Idea:
+Dla posortowanych rosnąco końców odcinków wybieramy w kolejności od lewej te, które nie nachodzą na poprzedni wybrany odcinek.
+
+Dowód poprawności algorytmu:
+Załóżmy nie wprost, że istnieje rozwiązanie lepsze od naszego. Spośród takich rozwiązań wybierzmy to które ma najwięccej od lewej patrząc wspólnych odcinków z naszym rozwiązaniem. Rozważmy pierwszą pozycję, na której mamy różne odcinki. Końcówki tych odcinków mogą być tylko w jednej z trzech relacji:
+* odcinek rozwiązania optymalnego kończy się wcześniej niż w moim rozwiązaniu - sprzeczność z działaniem algorytmu - skoro można było go wziąć to powinien być wzięty
+* odcinki kończą się w tym samym miejscu - w rozwiązaniu optymalnym zatem możemy zamienić ten odcinek na nasz nie tracąc na optymalności - sprzeczność z faktem, że wzięliśmy rozwiązanie optymalne o najdłuższym prefiksie
+* odcinek rozwiązania optymalnego kończy się później niż w moim rozwiązaniu - Z tego samego powodu co powyżej dostajemy sprzeczność.
+
+Złożoność czasowa: O(n*log(n))
+
+
+3.
+procedure alg(a,b)
+	repeat until a == 1
+		c <- ceil(b/a)
+		a <- a * c - b
+		b <- b * c
+		wyświetl(1/c)
+
+Dowód skończoności algorytmu:
+
+c := ceil(b/a)
+
+Obserwacje:
+
+W każdym kroku algorytmu
+b/a <= ceil(b/a)
+Jeżeli zdażyłoby się tak, że w którymś kroku algorytmu dostaniemy równość, to algorytm zakończy swoje działanie.
+Załóżmy, że zawsze mamy ostrą nierówność:
+b/a > ceil(b/a) - 1, wtedy
+a * ceil(b/a) - b < a, ale
+działanie naszego algorytmu polega na przypisaniu
+a <- a * ceil(b/a) - b
+Zatem w każdym kroku algorytmu a się zmniejsza. Ponieważ a jest skończoną liczbą naturalną, to w którymś kroku osiągnie wartość, która podzieli b całkowicie. W szczególności może osiągnąć wartość jeden. Zatem algorytm zakończy się.
+
+Algorytm nie znajduje rozwiązań optymalnych. Przykład:
+5/21 = 1/5 + 1/27 + 1/945 = 1/6 + 1/14
+
+## Zadanie 4
+**Idea:**
+Rozważmy wysokości wierzchołków, tzn maksymalną długość ścieżki biegnącej od rodzica przez któreś z swoich dzieci, aż do liścia. Pokolorujmy wszystkie wierzchołki wysokości k/2.4.
+Idea:
+Rozważmy wysokości wierzchołków, tzn maksymalną długość ścieżki biegnącej od rodzica przez któreś z swoich dzieci, aż do liścia. Pokolorujmy wszystkie wierzchołki wysokości k/2.
+
+Dowód poprawności:
+Załóżmy, że istnieje jakieś inne kolorowanie lepsze od mojego. Każde takie rozwiązanie można przekształcić do postaci znormalizowanej, tzn takiej że pokolorowane wierzchołki są tylko w dole drzewa - precyzyjniej każda ścieżka od liścia do korzenia ma pokolorowane tylko pierwsze ileś wierzchołków, potem są już tylko niepokolorowane. Fakt ten wynika z tego, że jeżeli dany wierzchołek w rozwiązaniu optymalnym jest pokolorowany, a jego dziecko nie, to możemy pokolorować dziecko kosztem rodzica nie tracąc na optymalności. Rozważmy znormalizowane rozwiązania optymalne i wybierzmy z nich takie , które w największym stopniu pokrywa się z moim, tzn idąc warstwami od dołu najdłużej dostaję te same warstwy. Ponieważ rozwiązanie optymalne jest różne od mojego, to pewien wierzchołek o wysokości mniejszej niż k/2 został niepokolorowany kosztem więcej niż jednego wierzchołka wysokości większej niż k/2. 
+
+Fakt 1.
+Może istnieć tylko jedna ścieżka długości k/2+h, gdzie h>0. Ponadto wszystkie pozostałe ścieżki są maksymalnie długości k/2-h.
+
+Rozważmy ciąg przekształceń rozwiązania znalezionego przez mój algorytm do rozważanego rozwiązania optymalnego. Jedyną dozwoloną operacją jest pokolorowanie wierzchołka. Odmalowywanie wierzchołków następuje automatycznie. Zauważmy, że dowolna operwcja domalowania wierzchołka kosztuje odmalowanie przynajmniej jednego wierzchołka. Dowód wynika z faktu, że każde drzewo zawiera przynaajmniej dwa liście.
+
+
+Złożoność czasowa O(V+E)
+złożoność pamięciowa O(V)
+
+
+5.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

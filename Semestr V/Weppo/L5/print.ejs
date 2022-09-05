@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        Imie: <%- imie %>
+    </div>
+    <div>
+        Nazwisko: <%- nazwisko %>
+    </div>
+    <div>
+        Nazwa zajec: <%- nazwa_zajec %>
+    </div>
+
+    <% for (let i=0; i<10; i++) { %>
+        <div>
+            Zad <% = i+1 %>&nbsp;
+            <% if (locals.punkty[i]) { %>
+                <% -punkty[i] %>
+            <% } else { %>
+                <% 0 %>
+            <% } %>
+        </div>
+    <% } %>
+</body>
+</html>

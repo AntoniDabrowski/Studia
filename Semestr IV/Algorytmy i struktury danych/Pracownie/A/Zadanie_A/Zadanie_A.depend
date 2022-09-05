@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1615660760 source:c:\users\user\studia\semestr iv\algorytmy i struktury danych\pracownie\a\zadanie_a\main.cpp
+	<iostream>
+	<math.h>
+	<bits/stdc++.h>
+	<tuple>
+

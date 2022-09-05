@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.743056,
+          14.465
+        ]
+      },
+      "properties": {
+        "feet": 11174,
+        "meters": 3406,
+        "latitude": 14.465,
+        "longitude": -90.743056,
+        "name": "Volcan Antigua",
+        "countries": [
+          "Antigua and Barbuda"
+        ],
+        "continent": "North America",
+        "marker-size": "medium",
+        "marker-symbol": "triangle"
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1619090365 source:c:\users\user\studia\semestr iv\sieci komputerowe\programy\router\router\main.c
+	<stdio.h>
+	<stdlib.h>
+	<limits.h>
+
+1618999245 source:c:\users\user\studia\semestr iv\sieci komputerowe\programy\router\router\recive.c
+	<arpa/inet.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<errno.h>
+
+1618999252 source:c:\users\user\studia\semestr iv\sieci komputerowe\programy\router\router\send.c
+	<arpa/inet.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<unistd.h>
+	<errno.h>
+

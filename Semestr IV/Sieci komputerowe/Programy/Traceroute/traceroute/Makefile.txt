@@ -1,0 +1,11 @@
+
+all :
+        gcc -Wall main.c send_packet.c response_handling.c common_functions.c -o traceroute
+
+distclean:
+        rm -f traceroute
+
+
+
+
+

@@ -1,0 +1,186 @@
+import numpy as np
+from time import time
+import random
+import fileinput
+
+
+def is_won(box3x3):
+    for i in range(3):
+        if box3x3[i, 0] == 1 and box3x3[i, 1] == 1 and box3x3[i, 2] == 1:
+            return True
+        if box3x3[0, i] == 1 and box3x3[1, i] == 1 and box3x3[2, i] == 1:
+            return True
+    if box3x3[0, 0] == 1 and box3x3[1, 1] == 1 and box3x3[2, 2] == 1:
+        return True
+    if box3x3[0, 2] == 1 and box3x3[1, 1] == 1 and box3x3[2, 0] == 1:
+        return True
+    return False
+
+
+def compute_legal_moves(main_board_o, main_board_x, small_boards_o, small_boards_x, no_square):
+    if main_board_o[no_square // 3, no_square % 3] or main_board_x[no_square // 3, no_square % 3] or small_boards_x[
+        no_square].all() or small_boards_o[no_square].all():
+        return [(y + 3 * (i // 3), x + 3 * (i % 3)) for y in range(3) for x in range(3) for i in range(9) if
+                not (small_boards_o[i, y, x] or small_boards_x[i, y, x] or main_board_o[
+                    num_to_yx(i)] or main_board_x[num_to_yx(i)])]
+    return [(y + 3 * (no_square // 3), x + 3 * (no_square % 3)) for y in range(3) for x in range(3) if
+            not (small_boards_o[no_square, y, x] or small_boards_x[no_square, y, x])]
+
+
+def execute_move(main_board_o, main_board_x, small_boards_o, small_boards_x, yx_move, whose_move):
+    if whose_move == 0:
+        small_boards_o[yx_to_num(yx_move[0], yx_move[1]), yx_move[0] % 3, yx_move[
+            1] % 3] = True  # there might be a problem with types ???
+        if is_won(small_boards_o[yx_to_num(yx_move[0], yx_move[1])]):
+            main_board_o[num_to_yx(yx_to_num(yx_move[0], yx_move[1]))] = True
+    elif whose_move == 1:
+        small_boards_x[yx_to_num(yx_move[0], yx_move[1]), yx_move[0] % 3, yx_move[
+            1] % 3] = True  # there might be a problem with types ???
+        if is_won(small_boards_x[yx_to_num(yx_move[0], yx_move[1])]):
+            main_board_x[num_to_yx(yx_to_num(yx_move[0], yx_move[1]))] = True
+
+
+# def select_random_move():
+#     pass
+
+def state(board_o, board_x):
+    if is_won(board_o):
+        return 0
+    if is_won(board_x):
+        return 1
+    return -1
+
+
+def yx_to_num(y, x):
+    return (y // 3) * 3 + (x // 3)
+
+
+def num_to_yx(num):
+    return num // 3, num % 3
+
+
+def simulation(main_board_o, main_board_x, small_boards_o, small_boards_x, no_square, whose_move, verbose=False):
+    basic_moves = compute_legal_moves(main_board_o, main_board_x, small_boards_o, small_boards_x, no_square)
+    count_moves = len(basic_moves)
+    basic_statistics = [0] * count_moves
+    draws = [0] * count_moves
+    if not basic_moves:
+        return 0  # ???
+    t_0 = time()
+    i = 0
+
+    while time() - t_0 < 5:
+        m_board_o = main_board_o.copy()
+        m_board_x = main_board_o.copy()
+        s_boards_o = small_boards_o.copy()
+        s_boards_x = small_boards_x.copy()
+        current_move = basic_moves[i]
+
+        execute_move(m_board_o, m_board_x, s_boards_o, s_boards_x, current_move, whose_move)
+        current_player = not whose_move
+        legal_moves = compute_legal_moves(m_board_o, m_board_x, s_boards_o, s_boards_x,
+                                          (current_move[0] % 3) * 3 + current_move[1] % 3)
+        if verbose:
+            print_board(s_boards_o, s_boards_x)
+            print(m_board_o.astype(int))
+            print(m_board_x.astype(int))
+            print(current_move, "\n")
+
+        while legal_moves and not is_won(m_board_x) and not is_won(m_board_o):
+            current_move = random.choice(legal_moves)
+            execute_move(m_board_o, m_board_x, s_boards_o, s_boards_x, current_move, current_player)
+            current_player = not current_player
+            legal_moves = compute_legal_moves(m_board_o, m_board_x, s_boards_o, s_boards_x,
+                                              (current_move[0] % 3) * 3 + current_move[1] % 3)
+
+            if verbose:
+                print_board(s_boards_o, s_boards_x)
+                print(m_board_o.astype(int))
+                print(m_board_x.astype(int))
+                print(current_move, "\n")
+        if is_won(m_board_x):
+            basic_statistics[i] += whose_move
+        elif is_won(m_board_o):
+            basic_statistics[i] += not whose_move
+        else:
+            draws[i] += 1
+
+        i += 1
+        i %= count_moves
+    # print(draws)
+    return basic_moves, basic_statistics
+
+
+def print_board(small_boards_o, small_boards_x):
+    big_board = np.ones((9, 9)).astype(int) * (-1)
+    for i in range(9):
+        for y in range(3):
+            for x in range(3):
+                if small_boards_o[i, y, x]:
+                    big_board[y + 3 * (i // 3), x + 3 * (i % 3)] = 0
+                elif small_boards_x[i, y, x]:
+                    big_board[y + 3 * (i // 3), x + 3 * (i % 3)] = 1
+    for y in range(9):
+        line = ""
+        for x in range(9):
+            if x % 3 == 0 and x != 0:
+                line += "|"
+            if big_board[y, x] == 0:
+                line += "O"
+            elif big_board[y, x] == 1:
+                line += "X"
+            else:
+                line += " "
+        if y % 3 == 0 and y != 0:
+            print("-" * 11)
+        print(line)
+
+
+def play():
+    main_board_o = np.zeros((3, 3)).astype(bool)
+    main_board_x = np.zeros((3, 3)).astype(bool)
+    small_boards_o = np.zeros((9, 3, 3)).astype(bool)
+    small_boards_x = np.zeros((9, 3, 3)).astype(bool)
+    current_square = 0
+    while True:
+        print_board(small_boards_o, small_boards_x)
+        basic_moves, basic_statistics = simulation(main_board_o, main_board_x, small_boards_o, small_boards_x,
+                                                   current_square, 0)
+        y, x = basic_moves[max(enumerate(basic_statistics), key=lambda x: x[1])[0]]
+        current_square = (y % 3) * 3 + x % 3
+        small_boards_o[yx_to_num(y, x), y % 3, x % 3] = True
+        if is_won(small_boards_o[yx_to_num(y, x)]):
+            main_board_o[y // 3, x // 3] = True
+        print_board(small_boards_o, small_boards_x)
+        print(basic_moves)
+        print(basic_statistics)
+        y, x = int(input()), int(input())
+        if main_board_o[current_square // 3, current_square % 3] or main_board_x[
+            current_square // 3, current_square % 3]:
+            small_boards_x[yx_to_num(y, x), y % 3, x % 3] = True
+        else:
+            small_boards_x[current_square, y, x] = True
+        if is_won(small_boards_x[yx_to_num(y,x)]):  # Here is a bug - y,x sometimes is from range <0,2> and
+                                                    # sometimes from range <0,8>
+            main_board_o[y // 3, x // 3] = True
+        print(main_board_o)
+        print(main_board_x)
+        current_square = (y % 3) * 3 + x % 3
+
+
+if __name__ == '__main__':
+    random.seed(10)
+    main_board_o = np.zeros((3, 3)).astype(bool)
+    main_board_x = np.zeros((3, 3)).astype(bool)
+    small_boards_o = np.zeros((9, 3, 3)).astype(bool)
+    small_boards_x = np.zeros((9, 3, 3)).astype(bool)
+    # small_boards_x[2, 2, 0] = True
+    # small_boards_x[2, 1, 1] = True
+    # small_boards_x[2, 0, 2] = True
+    #
+    # small_boards_x[7, 2, 2] = True
+
+    # print_board(small_boards_o, small_boards_x)
+    # print()
+    # simulation(main_board_o, main_board_x, small_boards_o, small_boards_x, 7, 0)
+    play()

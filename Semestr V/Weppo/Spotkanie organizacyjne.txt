@@ -1,0 +1,4 @@
+od 12-16
+wpisywać w kolejkę FIFO w arkuszu kalkulacyjnym
+publiczne pokazywanie programów - można oglądać
+dziewięć list co dwa tygodnie, niekiedy co tydzień

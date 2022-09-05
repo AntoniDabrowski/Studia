@@ -1,0 +1,31 @@
+[6, 28, 496]
+[6, 28, 496]
+[6, 28, 496]
+         328300 function calls (4018 primitive calls) in 0.139 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.164    0.164 List3_ex2_Dabrowski.py:1(<module>)
+      795    0.020    0.000    0.020    0.000 List3_ex2_Dabrowski.py:25(is_perfect)
+        1    0.000    0.000    0.000    0.000 List3_ex2_Dabrowski.py:3(ArgumentNotIntError)
+        1    0.000    0.000    0.027    0.027 List3_ex2_Dabrowski.py:48(perfect_comprehension)
+        1    0.000    0.000    0.020    0.020 List3_ex2_Dabrowski.py:6(perfect_imperative)
+        1    0.001    0.001    0.027    0.027 List3_ex2_Dabrowski.py:67(<listcomp>)
+      799    0.001    0.000    0.026    0.000 List3_ex2_Dabrowski.py:68(<listcomp>)
+        1    0.000    0.000    0.117    0.117 List3_ex2_Dabrowski.py:71(perfect_functional)
+320399/799    0.115    0.000    0.115    0.000 List3_ex2_Dabrowski.py:90(<lambda>)
+ 5481/799    0.002    0.000    0.002    0.000 List3_ex2_Dabrowski.py:91(<lambda>)
+      799    0.001    0.000    0.117    0.000 List3_ex2_Dabrowski.py:92(<lambda>)
+        6    0.000    0.000    0.000    0.000 cp1252.py:18(encode)
+        6    0.000    0.000    0.000    0.000 {built-in method _codecs.charmap_encode}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        1    0.000    0.000    0.164    0.164 {built-in method builtins.exec}
+        3    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+        3    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+My comment:
+The longest process is evaluating List3_ex2_Dabrowski.py:71(perfect_functional), which corespondes with
+calculating perfect numbers using functional programming.

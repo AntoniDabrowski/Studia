@@ -1,0 +1,41 @@
+procedure klocki(L - lista)
+	reachable <- zainicjalizuj postą listę długości suma(L)
+	dla każdej liczby l z L:
+		for i <- 0 to len(reachable)
+			sprawdź czy można dojść do pola o indeksie i-l:
+			jeżeli nie -> powiedz, że można dojść do pola i przy pomocy liczyby l
+			jeżeli tak -> sprawdź czy istnieje droga dojścia do i 
+				zawierająca inne elementy niż droga zawierająca l
+				jeżeli nie -> przejdź dalej
+				jeżeli tak -> oznacz pole i jako super-wierzchołek
+	sprawdź czy istniał jakikolwiek superwierzchołek:
+	jeżeli tak -> zwróć maksimum ze zbioru indeksów super-wierzchołków
+	jeżeli nie -> wyznacz na podstawie reachable ograniczenie dolne na różnicę wysokości
+		dwóch wież
+		Dla wyznaczonego ograniczenia sprawdzaj idąc od dołu po tablicy reachable czy
+		dwie wysokości będące w odległości równej dolnemu ograniczeniu można ułożyć z
+		różnych elementów.
+
+procedure sprawdź_rozłączność_ścieżek(reachable,sprawdzana_liczba,nowa_liczba,
+					lista_super_wierzchołków):
+	procedure ścieżka(sprawdzana_liczba):
+		path <- pusta lista służąca do spamiętywania ścieżki
+		dopóki sprawdzana liczba jest różna od zera lub nie jest super wierzchołkiem:
+			path <- wpisz na końcu reachable[sprawdzana_liczba]
+			sprawdzana_liczba <- sprawdzana_liczba-reachable[sprawdzana_liczba]
+	stara_ścieżka <- ścieżka(sprawdzana_liczba)
+	nowa_ścieżka <- ścieżka(sprawdzana_liczba-nowa_liczba)
+	sprawdź czy listy stara_ścieżka i nowa_ścieżka zawierają jakiś identyczny element:
+	jeżeli tak -> zwróć False
+	jeżeli nie -> zwróć True
+
+
+
+
+
+
+
+
+
+
+

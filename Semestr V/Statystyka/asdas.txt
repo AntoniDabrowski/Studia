@@ -1,0 +1,73 @@
+import numpy as np
+
+
+def is_won(box3x3):
+    for i in range(3):
+        if box3x3[i, 0] == 1 and box3x3[i, 1] == 1 and box3x3[i, 2] == 1:
+            return True
+        if box3x3[0, i] == 1 or box3x3[1, i] == 1 or box3x3[2, i] == 1:
+            return True
+    if box3x3[0, 0] == 1 and box3x3[1, 1] == 1 and box3x3[2, 2] == 1:
+        return True
+    if box3x3[0, 2] == 1 and box3x3[1, 1] == 1 and box3x3[2, 0] == 1:
+        return True
+    return False
+
+
+def compute_legal_moves(main_board_o, main_board_x, small_boards_o, small_boards_x, no_square):
+    if main_board_o[no_square // 3, no_square % 3] or main_board_x[no_square // 3, no_square % 3] or small_boards_x[
+        no_square].all() or small_boards_x[no_square].all():
+        
+
+
+def execute_move():
+    pass
+
+
+def select_random_move():
+    pass
+
+
+def simulation():
+    pass
+
+
+def print_board(small_boards_o, small_boards_x):
+    big_board = np.ones((9, 9)).astype(int) * (-1)
+    for i in range(9):
+        for y in range(3):
+            for x in range(3):
+                if small_boards_o[i, y, x]:
+                    big_board[y + 3 * (i // 3), x + 3 * (i % 3)] = 0
+                elif small_boards_x[i, y, x]:
+                    big_board[y + 3 * (i // 3), x + 3 * (i % 3)] = 1
+    for y in range(9):
+        line = ""
+        for x in range(9):
+            if x % 3 == 0 and x != 0:
+                line += "|"
+            if big_board[y, x] == 0:
+                line += "O"
+            elif big_board[y, x] == 1:
+                line += "X"
+            else:
+                line += " "
+        if y % 3 == 0 and y != 0:
+            print("-" * 11)
+        print(line)
+
+
+if __name__ == '__main__':
+    main_board_o = np.zeros((3, 3)).astype(bool)
+    main_board_x = np.zeros((3, 3)).astype(bool)
+    small_boards_o = np.zeros((9, 3, 3)).astype(bool)
+    small_boards_x = np.zeros((9, 3, 3)).astype(bool)
+    small_boards_x[2, 2, 0] = True
+    small_boards_x[2, 1, 1] = True
+    small_boards_x[2, 0, 2] = True
+
+    small_boards_x[7, 2, 2] = True
+
+    print_board(small_boards_o, small_boards_x)
+    print(is_won(small_boards_x[2]))
+    print(small_boards_x[2])

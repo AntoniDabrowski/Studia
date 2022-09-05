@@ -1,0 +1,32 @@
+1. Wczytywanie danych DONE
+2. Wypisywanie danych DONE
+3. Tworzenie pakietów do wysłania DONE 
+4. Handeling odbieranych pakietów DONE
+5. Update czasów przed wysłaniem NIE POTRZEBNE
+
+6. Wysyłanie
+7. Odbieranie
+
+2
+10.0.1.1/8 distance 3
+192.168.5.43/24 distance 2
+1 1 1 1 32
+10 0 1 1 8
+10 0 1 2
+10
+
+
+1 1 1 1 32
+192 168 5 43 24
+192 168 5 255
+10
+
+1 1 1 1 32
+10 0 1 1 8
+10 0 1 2
+4294967295
+
+1 1 1 1 32
+192 168 5 43 24
+192 168 5 255
+4294967295

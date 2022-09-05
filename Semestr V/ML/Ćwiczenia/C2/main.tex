@@ -1,0 +1,58 @@
+\documentclass[a4paper]{article} 
+\input{head}
+\begin{document}
+
+%-------------------------------
+%	TITLE SECTION
+%-------------------------------
+
+\fancyhead[C]{}
+\hrule \medskip % Upper rule
+\begin{minipage}{0.295\textwidth} 
+\raggedright
+\footnotesize
+Antoni Dąbrowski \hfill\\   
+Nr. indeksu 317214\hfill\\
+Mail: 317214@uwr.edu.pl
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\centering 
+\large 
+Machine Learning\\ 
+\normalsize 
+Ćwiczenia - lista II\\ 
+\end{minipage}
+\begin{minipage}{0.295\textwidth} 
+\raggedleft
+\today\hfill\\
+\end{minipage}
+\medskip\hrule 
+\bigskip
+
+%-------------------------------
+%	CONTENTS
+%-------------------------------
+
+
+\section{Zadanie pierwsze}
+Logistic model:
+$$P(y=1|x,\theta)=\sigma(x\theta)=\frac{1}{1+e^{-x\theta}}=\frac{1}{1+exp(-\sum_{i=1}^5x_i\theta_i+\theta_0)}$$
+
+Bayes model:
+$$P(y=1|x)=\frac{P(x|y=1)P(y=1)}{P(x)}=\frac{P(x|y=1)P(y=1)}{P(y=1)P(x|y=1)+P(y=0)P(x|y=0)}=$$
+After dividing by numerator
+$$=\frac{1}{1+\frac{P(x|y=0)P(y=0)}{P(x|y=1)P(y=1)}}=\frac{1}{1+exp(ln(\frac{P(x|y=0)P(y=0)}{P(x|y=1)P(y=1)}))}=\frac{1}{1+exp(ln(\frac{P(x|y=0)}{P(x|y=1)})+ln(\frac{P(y=0)}{P(y=1)}))}$$
+
+Naive assumption:
+$$P(x|y=0)=\prod_{i=1}^5P(x_i|y=0)$$
+$$P(x|y=1)=\prod_{i=1}^5P(x_i|y=1)$$
+
+Rewriting previous expression we get:
+$$P(y=1|x)=\frac{1}{1+exp(ln\frac{P(y=0)}{P(y=1)}+\sum ln\frac{x_i|y=0)}{P(x_i|y=1)})}$$
+
+Therefore, logistic regression is equivalent to naive Bayes when:
+$$\theta_0=ln\frac{P(y=0)}{P(y=1)}$$
+$$-\sum_{i=1}^5x_i\theta_i=\sum ln\frac{P(x_i|y=0)}{P(x_i|y=1)}$$
+
+
+\end{document}

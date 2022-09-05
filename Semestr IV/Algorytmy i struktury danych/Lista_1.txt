@@ -1,0 +1,312 @@
+1. a)
+
+Idea:
+Przejdź drzewo DFS-em zliczając odwiedzane wierzchołki
+
+def count_nodes(T):
+	L = T.left_subtree()
+	R = T.right_subtree()
+	if L.not_empty() and R.not_empty():
+		return 1 + count_nodes(L) + count_nodes(R)
+	if L.not_empty():
+		return 1 + count_nodes(L)
+	if R.not_empty():
+		return 1 + count_nodes(R)
+	return 1
+
+1. b)
+
+Idea:
+Najdłuższa ścieżka w drzewie zaczyna się i kończy w liściu (wpp można ją przedłużyć -> sprzeczność). Pewien wierzchołek jest LCA szukanych liści. Dla każdego wierzchołka o ile nie jest liściem sprawdzę rekurencyjnie czy suma długości jego lewej ścieżki i prawej nie jest największa znaleziona do tej pory.
+
+max_length = 0
+
+def longest_path(T):
+	if T.is_leaf():
+		return 0
+	L = T.left_subtree()
+	R = T.right_subtree()
+	max_length = max(max_length, L+R
+	return max(L,R) + 1
+
+2.
+
+3.
+
+Idea:
+Graf sortujemy topologicznie zwracając uwagę na porządek leksykograficzny.
+
+
+def top_lex_sort(M) 						// M is a adjacency matrix
+	def alg(M,node,number_of_incoming_edges):
+		if M.size() == (1,1):
+			return [node]
+		next_node, number_of_incoming_edges, M = update(M,node,number_of_incoming_edges)
+		return merge(node,alg(M,next_node,number_of_incoming_edges)
+
+
+	def initialization(M)
+		next_node = -1
+		number_of_incoming_edges = [] 			// empty 1D table with size M
+		for i=0 to size of M:
+			number_of_incoming_edges.append(sum(M[i]))
+			if number_of_incoming_edges[-1]==0 and next_node == -1:
+				next_node = i
+	return next_node, number_of_incoming_edges
+
+
+	def update(M,node,number_of_incoming_edges):
+		M.remove_column(node)
+		M.remove_row(node)
+		next_node = -1
+		for i=0 to size of M:
+			if M[i,node] == 1:
+				number_of_incoming_edges[i] -= 1
+			if number_of_incoming_edges[i]==0 and next_node == -1:
+				next_node = i
+	return next_node, number_of_incoming_edges, M
+
+
+	next_node, number_of_incoming_edges = initialization(M)
+	return alg(M,node,number_of_incoming_edges)	
+
+Złożoność:
+O(|V|^2)
+
+Dowód poprawności:
+Na każdym etapie znalezione rozwiązanie jest rozszerzalne do optymalnego. Prosty dowód indukcyjny.
+
+4.
+
+Idea:
+Puszczam algorytm Dijkstry z v. Przechodzę DFS-em z u do v na wszystkie możliwe sposoby z dodatkowym warunkiem, że mogę przechodzić tylko do wierzchołków o mniejszej odległości od v (sprawdzane w czasie stałym na podstawie wyniku algorytmu Dijkstry). Można to zrobić metodą programowania dynamicznego - podczas wychodzenia z rekursji w DFS-ie zapamiętujemy liczbę sensownych ścieżek przechodzących przez dany wierzchołek.
+
+procedure zlicz_sensowne_drogi(G,u,v)
+	L <- Dijkstra(G,v)
+
+	procedure DFS(w,slownik)
+		if w in slownik:
+			return slownik[w]
+		if w == v:
+			slownik[w] = 1
+		counter <- 0
+		aktualny_koszt <- odczytaj minimalnuy koszt ścieżki z w do v z listy L
+		for s in sąsiedzi w:
+			if koszt drogi s do v < aktualny koszt
+				counter <- counter + DFS(G,s,slownik)
+		slownik[w] = counter
+		return counter
+	return DFS(u,pusty_slownik)
+
+
+Dowód poprawności algorytmu:
+Załóżmy, ża jakaś znaleziona droga nie jest sensowna. Oznaczałoby to że mój algorytm wybrał po pewnym wierzchołku wierzchołek dla którego najkrótsza ścieżka do v byłaby dłuższa od najkrótszej ścieżki z poprzedniego wierzchołka - sprzeczność z specyfikacją algorytmu:
+// if koszt drogi s do v < aktualny koszt
+
+Algorytm wychodząc z rekursji dla nowych wierzchołków podaje liczbę sensownych ścieżek między tym wierzchołkiem a v. Dowód indukcyjny po porządku wychodzenia z rekursji:
+Baza:
+Rozważmy wierzchołek incydentny z v. Algorytm zliczy liczbę sensownych ścieżek od tego wierzchołka poprawnie - zliczy ją raz - i zapisze do słownika.
+Krok:
+Załóżmy, że policzyliśmy już prawidłowo liczbę sensownych ścieżek dla wszystkich sensownych sąsiadów pewnego wierzchołka q. Pokażę, że wychodząc z rekursją z tego wierzchołka liczba zliczonych sensownych ścieżek jest prawidłowa. Każda sensowna ścieżka z pierwszego spośród sensownych sąsiadów jest inna od dowolnej innej ścieżki innego sensownego sąsiada - w szególności ze względu na wierzchołek początkowy. Zatem zliczając te wszystkie ścieżki w sumie jako ścieżki sensowne z q policzymy zarówno każdą ścieżkę oraz żadną dwa razy cnd.
+
+
+Złożoność czasowa:
+DFS O(|V|+|E|)
+Dijkstra O(|V|log(|V|)+|E|)
+	
+Uwagi:
+BFS będzie działał trochę wolniej, nie szuka ścieżek ale dróg wobec czego rózne wierzchołki i krawędzie może rozpatrywać kilka razy.
+
+
+5.
+
+Idea:
+Dynamicznie przejść graf DFS-em od każdego z wierzchołków o zerowym stopniu wejścia.
+
+def longest_path(G):
+	def alg(G,starting_node,opt_paths):
+		nodes_to_check = G.outgoing(starting_node) 
+		if nodes_to_check.is_empty():
+			return 0
+		path_length = 0
+		for node in nodes_to_check:
+			if node in opt_paths.keys():
+				path_length = max(path_length,opt_paths[node])
+			else:
+				founded_path_length = alg(G,node,opt_paths)
+				path_length = max(path_length,founded_path_length)
+		opt_paths[starting_node] = path_length + 1
+		return path_length + 1
+	
+	starting_nodes = nodes_with_no_incoming_edges(G) 
+	opt_paths = empty dictionary
+	best_path_length = 0
+	for node in starting_nodes:
+		best_path_length = max(best_path_length,alg(G,node,opt_paths))
+	return best_path_length
+
+procedure longest_path(G)
+	- wyznacz wierzchołki o zerowym stopniu wejścia
+	- stwórz pusty słownik zapamiętujący długości optymalnych (najdłuższych ścieżek)
+	  dla każdego odwiedzonego wierzchołka
+	- dla każdego wierzchołka o zerowym stopniu wejścia wykonuj przszukiwanie wgłąb z
+	  aktualizacją słownika optymalnych ścieżek
+	- zwróć długość najdłuższej ścieżki
+		
+def longest_path_with_path_reconstruction(G):
+	def alg(G,starting_node,opt_paths):
+		nodes_to_check = G.outgoing(starting_node) 
+		if nodes_to_check.is_empty():
+			return [starting_node]
+		path_length = 0
+		path = []
+		for node in nodes_to_check:
+			if node in opt_paths.keys():
+				path_length = max(path_length,opt_paths[node][0])
+			else:
+				founded_path_length, founded_path = alg(G,node,opt_paths)
+				if founded_path_length > path_length:
+					path_length = founded_path_length
+					path = founded_path
+		opt_paths[starting_node] = (path_length + 1, path)
+		return path_length + 1, merge(starting_node,path)
+	
+	starting_nodes = nodes_with_no_incoming_edges(G) 
+	opt_paths = empty dictionary
+	best_path_length = 0
+	best_path = []
+	for node in starting_nodes:
+		founded_path_length, founded_path = alg(G,node,opt_paths)
+		if best_path_length < founded_path_length:
+			best_path_length = founded_path_length
+			best_path = founded_path
+	return best_path
+
+procedure longest_path(G)
+	- wyznacz wierzchołki o zerowym stopniu wejścia
+	- stwórz pusty słownik zapamiętujący długości optymalnych (najdłuższych ścieżek)
+	  oraz kolejny wierzchołek na tej ścieżce dla każdego odwiedzonego wierzchołka
+	- dla każdego wierzchołka o zerowym stopniu wejścia wykonuj przszukiwanie wgłąb z
+	  aktualizacją słownika optymalnych ścieżek
+	- zrekonstruuj najdłuższą ścieżkę i ją zwróć
+
+
+Dowód poprawności:
+Najdłuższa ścieżka w grafie skierowanym zaczyna się w wierzchołku o zerowym stopniu wejścia. Zaczynając z każdego takiego wierzchołka przechodzimy wszystkie możliwe ścieżki wybierając najdłuższą z nich.
+
+Złożoność:
+O(|V|+|E|)
+
+6.
+
+Idea:
+Dzielimy listę na dwie równe części [a_1,...,a_{n/2}] oraz [a_{n/2+1},...,a_n]. Przechodzimy po listach w następujący sposób zaczynając od pary pierszych elementów list:
+-Jeżeli wyszczególniony element pierwszej listy jest co najmniej dwa razy mniejszy od wyszczególnionego elementu drugiej listy usuń oba elementy i rozważ kolejne z obydwu list
+-Wpp porównaj wyszczególniony element pierwszej listy z kolejnym elementem drugiej listy
+Gdy przejdziemy całą listę drugą kończymy powyższy proces i zwracamy liczbę usuniętych krawędzi.
+
+procedure alg(A=[a_1,...,a_n])
+	L <- lewa połowa A
+	R <- prawa połowa A
+	l <- 0
+	r <- 0
+	licznik <- 0
+	repeat
+		if L[l]*2 <= R[r]
+			licznik <- licznik + 2
+			l <- l + 1
+			r <- r + 1
+		else
+			r <- r + 1
+	until r < n/2
+
+	return licznik 
+
+Dowód poprawności:
+Nie wprost załóżmy, że istnieje rozwiązanie optymalne specjalnej postaci o większej liczbie wykreślonych par niż zrobił to mój algorytm. Rozważmy rozwiązania posortowane leksykograficznie. Wśród rozwiązań optymalnych wybierzmy takie, które w największym stopniu (co do początkowych elementów) pokrywa się z naszym. Zajmijmy się pierwszą różną parą.
+- Jeżeli różnią się one przynajmniej na pierwszym elemencie:
+	Rozwiązanie zanlezione przez mój algorytm: (a_l,a_r)
+	Rozwiązanie optymalne: (a_{l+k},a_m)
+  to możemy zauważyć, że a_l nie zostało wybrane w rozważanym rozwiązaniu optymalnym - jeżeli 
+  pojawiłoby się w innym miejscu niż to właśnie, to zaburzyłoby porządek leksykograficzny.
+  Zatem mogę parę (a_{l+k},a_m) zamienić na (a_l,a_m) tworząc nowe rozwiązanie optymalne niżej
+  w porządku leksykograficznym - sprzeczność
+- Wpp rozważamy parę, która różni się na drugim miejscu:
+	Rozwiązanie zanlezione przez mój algorytm: (a_l,a_r)
+	Rozwiązanie optymalne: (a_l,a_{r+k})
+  Zauważmy, że a_r musi należeć do jakiejś późniejszej pary w rozwiązaniu optymalnym - wpp
+  nie byłoby to pierwsze rozwiązanie optymalne w porządku leksykograficznym. Element a_r
+  może znaleźć się w rozwiązaniu optymalnym na dwóch pozycjach:
+* (a_m,a_r) - dla takiej pozycji nic nie stoi na przeszkodzie, aby zamienić w rozwiązaniu optymalnym wyszczególnione pary na (a_l,a_r),(a_m,a_{r+k}). Rozwiązanie ma tyle samo elementów, zatem jest wciąż optymalne, natomiast ma dłuższy prefiks pokrywający się z rozwiązaniem mojego algorytmu - sprzeczność, z założemiem o najdłuższym prefiksie
+* (a_r,a_m) - nie zachodzi ze względu na szczególną postać
+
+Chcę, aby moje rozwiązania optymalne miały własność t.że dla dowolnej pary (a_l,a_r) pierwszy
+element a_l należy do pierwszej połowy elementów, a drugi do drugiej. Każde rozwiązanie nawet
+jeśli nie jest takiej postaci, to może być do takiej równoważnie przekształcone. Pokażę to
+na przykładzie działania algorytmu przekształcenia:
+Dla każdej pary nie spełniającej warunku w porządku leksykograficznym:
+// przypadek kiedy a_l należy do drugiej połowy, a a_r do pierwszej trzeba wykluczyć jako niemożliwy
+* jeżeli a_l oraz a_r należą do pierwszej połowy i istnieje jakaś para (a'_l, a'_r) w drugiej połowie, to możemy je po prostu na krzyż połączyć w (a_l,a'_l),(a_r,a'_r)
+* jeżeli a_l oraz a_r należą do pierwszej połowy i nie istnieje żadna para (a'_l, a'_r) w drugiej połowie, wtedy co najmniej dwa elementy z drugiej połowy są bez przydziału. Zatem możemy połączyć a_l z jednym z tych elementów otrzymując poprawną parę
+* jeżeli a_l oraz a_r należą do drugiej połowy i nie istnieje żadna para (a'_l, a'_r) w pierwszej połowie, gdyż byłaby już rozpatrzona wcześniej - zatem istnieją przynajmniej dwa wolne elementy z pierwszej połowy. Zatem możemy połączyć a_r z jednym tych elementów otrzymując poprawną parę
+
+Złożoność czasowa:
+O(n)
+
+7.
+
+Idea:
+Odpalamy algorytm Floyda-Warshalla dla wierzchołków w kolejności V\{v_1,...,v_k},v_k,...,v_1. Algorytm w i-tym kroku działania wylicza najkrótsze ścieżki między wszystkimi wierzchołkami przechodzące przez wierzchołki do i-tego włącznie. Gdy algorytm wykona się już dla wierzchołków V\{v_1,...,v_k} w tym i każdym kolejnym kroku obliczamy sumę długości wszystkich najkrótszych ścieżek odczytując długości poszczególnych ścieżek z tablicy stworzonej przez algorytm:
+
+procedure suma_długości_ścieżek(V=[x_1,...,x_n,v_k,...,v_1],E - lista):
+	M <- tablica o rozmiarze n+k na n+k zainicjowana nieskończonościami
+	D <- pusta lista długości k+1 zainicjowana zerami
+	for edge in E
+		M[u][v] = c(u,v)
+		M[v][u] = c(u,v)
+	for i <- 0 to liczba wierzchołków
+		M[i][i] = 0
+	for i <- 0 to liczba wierzchołków
+		for j <- 0 to liczba wierzchołków
+			for k <- 0 to liczba wierzchołków
+				M[i][j] <- min(M[i][j], M[i][k] + M[k][j])
+		if i >= n-1
+			for j <- 0 to i+1
+				for k <- 0 to j
+					D[n+k-i] <- D[n+k-i] + M[j][k]
+	return D
+
+Złożoność czasowa:
+O(n^3)
+Złożoność pamięciowa:
+o(n^2)
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

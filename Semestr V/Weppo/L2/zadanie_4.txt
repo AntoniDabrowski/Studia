@@ -1,0 +1,24 @@
+typeof - funkcja zwracająca typ zmiennej
+Przykładowe wywołania:
+
+console.log(typeof true);               // boolean
+console.log(typeof new String("Antek"); // object
+console.log(typeof 'Antek');            // string
+console.log(typeof undefined);          // undefined
+console.log(typeof 123);                // number
+
+Możliwe wyniki:
+boolean, object, string, undefined, number
+
+instanceof - funkcja sprawdzająca czy zmienna jest instancją konkretnego prototypu
+Przykładowe wywołania:
+
+var a = new String('A');
+var b = 'B';
+
+console.log(a instanceof String); 	   // true
+console.log(b instanceof String); 	   // false
+console.log(a instanceof Object);  	   // true
+console.log(b instanceof Object);  	   // false
+console.log(new String instanceof Object); // true
+console.log(new String instanceof String); // true
